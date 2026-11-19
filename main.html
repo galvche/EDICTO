@@ -1,0 +1,2988 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Decreto Imperial — Warhammer 40,000: Dawn of War IV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;900&family=EB+Garamond:ital,wght@0,500;0,700;1,500;1,700&family=Pinyon+Script&family=Share+Tech+Mono&family=UnifrakturMaguntia&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold-bright: #f2cb6b;
+      --gold-mid: #c59b43;
+      --gold-dark: #694912;
+      --crimson-seal: #7a1010;
+      --crimson-bright: #b81d1d;
+      --parchment-light: #e5d2ab;
+      --parchment-mid: #cbb07d;
+      --parchment-dark: #8b6c3e;
+      --ink-black: #1b130c;
+      --ink-red: #6f1111;
+      --ease-gothic: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-snap: cubic-bezier(0.34, 1.45, 0.64, 1);
+
+      /* Cursor gótico-imperial personalizado */
+      --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f7dc88'/%3E%3Cstop offset='55%25' stop-color='%23c59b43'/%3E%3Cstop offset='100%25' stop-color='%236e4c14'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M3 2 L23 13 L13 15.5 L16.5 24.5 L12.5 26 L9 17 L3 22 Z' fill='url(%23g)' stroke='%23160d06' stroke-width='1.6' stroke-linejoin='round'/%3E%3Ccircle cx='9.5' cy='9.5' r='1.7' fill='%23b81d1d'/%3E%3C/svg%3E") 3 2, auto;
+      --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cdefs%3E%3ClinearGradient id='gp' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23fff0b8'/%3E%3Cstop offset='50%25' stop-color='%23e0b24c'/%3E%3Cstop offset='100%25' stop-color='%238c1414'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M4 2 L25 13.5 L14.5 16 L18 25.5 L13.8 27 L10.2 17.5 L4 22.5 Z' fill='url(%23gp)' stroke='%23120904' stroke-width='1.7' stroke-linejoin='round'/%3E%3Ccircle cx='10.5' cy='10' r='2.1' fill='%23ff3b2f'/%3E%3C/svg%3E") 4 2, pointer;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body, body * {
+      cursor: var(--cursor-default);
+    }
+
+    button,
+    a,
+    [role="button"],
+    .dial-wheel-box,
+    .dial-step-btn,
+    .cog-btn,
+    .imperial-edict-btn,
+    .btn-unlock-chains,
+    .btn-accept-oath,
+    .btn-forward-link,
+    .vox-choice-btn,
+    .vox-close-btn,
+    .modal-close,
+    .heretic-rune-trigger {
+      cursor: var(--cursor-pointer) !important;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background-color: #060403;
+      color: var(--ink-black);
+      font-family: 'EB Garamond', Georgia, serif;
+      overflow-x: hidden;
+    }
+
+    /* Fondo de imagen apocalíptica con movimiento orgánico + paralaje */
+    .war-photo-bg {
+      position: fixed;
+      inset: -5%;
+      width: 110%;
+      height: 110%;
+      background-image: url("https://img.magnific.com/foto-gratis/destruccion-apocaliptica-paisaje-zona-guerra_23-2150985680.jpg?semt=ais_hybrid&w=740&q=80");
+      background-size: cover;
+      background-position: center;
+      filter: contrast(1.18) saturate(1.26) brightness(0.76);
+      z-index: 0;
+      pointer-events: none;
+      transform: translate3d(var(--px, 0px), var(--py, 0px), 0) scale(1.04);
+      transition: transform 0.35s var(--ease-gothic);
+      animation: slowBattlePan 32s ease-in-out infinite alternate;
+    }
+
+    @keyframes slowBattlePan {
+      0% { filter: contrast(1.16) saturate(1.22) brightness(0.74); }
+      50% { filter: contrast(1.22) saturate(1.32) brightness(0.82); }
+      100% { filter: contrast(1.17) saturate(1.25) brightness(0.76); }
+    }
+
+    /* Niebla animada, iluminación de fuego, explosiones lejanas, brasas y trazadores */
+    #effects-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .vignette-overlay {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(255, 130, 40, 0.05) 0%, rgba(4, 3, 2, 0.84) 100%),
+        linear-gradient(180deg, rgba(4, 3, 2, 0.46) 0%, rgba(0, 0, 0, 0.05) 48%, rgba(62, 15, 4, 0.44) 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Botón visible de "cristales rotos" rompiendo la 4ª pared */
+    .heretic-rune-trigger {
+      position: fixed;
+      top: 12px;
+      right: 14px;
+      z-index: 260;
+      width: 68px;
+      height: 68px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 0 10px rgba(255, 48, 32, 0.55));
+      transition: transform 0.24s var(--ease-snap), filter 0.24s ease;
+      animation: glassKnockPulse 3.6s ease-in-out infinite;
+    }
+
+    .heretic-rune-trigger:hover {
+      transform: scale(1.12) rotate(-3deg);
+      filter: drop-shadow(0 0 18px rgba(255, 70, 45, 0.95));
+    }
+
+    .heretic-rune-trigger svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .glass-badge-tag {
+      position: absolute;
+      bottom: -2px;
+      right: 2px;
+      background: linear-gradient(90deg, #590808, #a81616);
+      color: #ffd7d0;
+      border: 1px solid #ff685c;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      padding: 1px 5px;
+      border-radius: 2px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+    }
+
+    @keyframes glassKnockPulse {
+      0%, 82%, 100% { transform: translate(0, 0) scale(1); }
+      85% { transform: translate(-2px, 2px) scale(1.04); }
+      88% { transform: translate(2px, -1px) scale(0.98); }
+      91% { transform: translate(-1px, 1px) scale(1.02); }
+    }
+
+    /* ======================================================================
+       CAJA FUERTE BLINDADA BAJO CADENAS REALISTAS Y CANDADO DE 5 CAMPOS (AOCDT)
+       ====================================================================== */
+    #chain-lock-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(26, 20, 15, 0.86) 0%, rgba(6, 4, 3, 0.97) 100%);
+      backdrop-filter: blur(7px) brightness(0.46);
+      transition: opacity 0.9s var(--ease-gothic), visibility 0.9s var(--ease-gothic), backdrop-filter 0.9s var(--ease-gothic);
+    }
+
+    #chain-lock-overlay.unlocked {
+      opacity: 0;
+      visibility: hidden;
+      backdrop-filter: blur(0px) brightness(1);
+      pointer-events: none;
+    }
+
+    .vault-door-frame {
+      position: fixed;
+      inset: 14px;
+      border: 4px solid #3d3022;
+      outline: 2px solid rgba(197, 155, 67, 0.28);
+      border-radius: 6px;
+      box-shadow:
+        inset 0 0 100px rgba(0, 0, 0, 0.96),
+        0 0 0 14px rgba(10, 8, 6, 0.88);
+      pointer-events: none;
+      z-index: 1;
+      transition: transform 1s var(--ease-gothic), opacity 0.85s ease;
+    }
+
+    #chain-lock-overlay.unlocked .vault-door-frame {
+      transform: scale(1.05);
+      opacity: 0;
+    }
+
+    #chains-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .padlock-panel {
+      position: relative;
+      z-index: 3;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.016) 0px,
+          rgba(255, 255, 255, 0.016) 2px,
+          transparent 2px,
+          transparent 6px
+        ),
+        radial-gradient(ellipse at 50% 10%, rgba(242, 203, 107, 0.16), transparent 65%),
+        linear-gradient(180deg, #272019 0%, #14100d 55%, #090706 100%);
+      border: 3px solid #8a6626;
+      outline: 2px solid #080605;
+      outline-offset: -7px;
+      box-shadow:
+        0 30px 85px rgba(0, 0, 0, 0.98),
+        inset 0 1px 0 rgba(242, 203, 107, 0.32),
+        inset 0 0 38px rgba(0, 0, 0, 0.88);
+      padding: 28px 28px 30px 28px;
+      border-radius: 5px;
+      max-width: 485px;
+      width: 100%;
+      text-align: center;
+      color: #ebd6a7;
+      transition: transform 0.8s var(--ease-gothic), opacity 0.75s ease;
+    }
+
+    .padlock-panel.shake-error {
+      animation: padlockShake 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    }
+
+    @keyframes padlockShake {
+      0%, 100% { transform: translateX(0); }
+      18% { transform: translateX(-9px) rotate(-1deg); }
+      38% { transform: translateX(8px) rotate(1deg); }
+      58% { transform: translateX(-6px) rotate(-0.6deg); }
+      78% { transform: translateX(5px) rotate(0.6deg); }
+    }
+
+    #chain-lock-overlay.unlocked .padlock-panel {
+      transform: scale(0.9) translateY(-24px);
+      opacity: 0;
+    }
+
+    .vault-bolt {
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #c9a254, #473312 72%, #171006);
+      border: 1px solid #090705;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.9);
+    }
+    .vault-bolt.tl { top: 12px; left: 12px; }
+    .vault-bolt.tr { top: 12px; right: 12px; }
+    .vault-bolt.bl { bottom: 12px; left: 12px; }
+    .vault-bolt.br { bottom: 12px; right: 12px; }
+
+    .padlock-shackle {
+      width: 98px;
+      height: 54px;
+      margin: -48px auto 12px auto;
+      border: 12px solid #a89782;
+      border-bottom: none;
+      border-radius: 52px 52px 0 0;
+      box-shadow:
+        0 -4px 12px rgba(0, 0, 0, 0.85),
+        inset 0 2px 4px rgba(255, 255, 255, 0.35);
+      transition: transform 0.6s var(--ease-snap);
+    }
+
+    .padlock-panel.open-shackle .padlock-shackle {
+      transform: translateY(-18px) rotate(-18deg);
+    }
+
+    .padlock-eyebrow {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: #d97777;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .padlock-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 20px;
+      color: var(--gold-bright);
+      margin-bottom: 6px;
+    }
+
+    .padlock-hint {
+      font-size: 15px;
+      color: #cbb589;
+      margin-bottom: 20px;
+    }
+
+    .dial-dials-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .dial-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      width: 62px;
+    }
+
+    .dial-step-btn {
+      width: 36px;
+      height: 22px;
+      background: #1b1510;
+      border: 1px solid #694d1d;
+      color: var(--gold-bright);
+      font-size: 10px;
+      line-height: 1;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+    }
+
+    .dial-step-btn:hover {
+      background: #2f2318;
+      border-color: var(--gold-bright);
+    }
+
+    .dial-step-btn:active {
+      transform: scale(0.94);
+    }
+
+    .dial-wheel-box {
+      width: 58px;
+      height: 68px;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.82) 0%, rgba(56,42,27,0.95) 50%, rgba(0,0,0,0.82) 100%);
+      border: 2px solid var(--gold-mid);
+      box-shadow:
+        inset 0 6px 13px rgba(0,0,0,0.92),
+        inset 0 -6px 13px rgba(0,0,0,0.92),
+        0 4px 10px rgba(0,0,0,0.65);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .dial-wheel-box:hover {
+      border-color: var(--gold-bright);
+      box-shadow:
+        inset 0 6px 13px rgba(0,0,0,0.92),
+        inset 0 -6px 13px rgba(0,0,0,0.92),
+        0 0 14px rgba(242, 203, 107, 0.22);
+    }
+
+    .dial-wheel-box::before,
+    .dial-wheel-box::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: rgba(242, 203, 107, 0.35);
+      pointer-events: none;
+    }
+    .dial-wheel-box::before { top: 15px; }
+    .dial-wheel-box::after { bottom: 15px; }
+
+    .dial-char {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: #fff0c4;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+      transition: transform 0.22s var(--ease-gothic), opacity 0.15s ease;
+    }
+
+    .dial-char.spin-up {
+      animation: dialFlipUp 0.22s var(--ease-gothic);
+    }
+
+    .dial-char.spin-down {
+      animation: dialFlipDown 0.22s var(--ease-gothic);
+    }
+
+    @keyframes dialFlipUp {
+      0% { transform: translateY(15px) scale(0.84); opacity: 0.25; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    @keyframes dialFlipDown {
+      0% { transform: translateY(-15px) scale(0.84); opacity: 0.25; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .dial-status-msg {
+      min-height: 20px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: #e8b55b;
+      margin-bottom: 14px;
+      transition: color 0.25s ease;
+    }
+
+    .dial-status-msg.error {
+      color: #ff6b6b;
+    }
+
+    .dial-status-msg.success {
+      color: #8ce99a;
+    }
+
+    .btn-unlock-chains {
+      background: linear-gradient(180deg, #8b1414 0%, #520808 100%);
+      color: #f6e2b3;
+      border: 1.5px solid var(--gold-mid);
+      padding: 11px 26px;
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: all 0.25s var(--ease-gothic);
+    }
+
+    .btn-unlock-chains:hover {
+      border-color: var(--gold-bright);
+      color: #fff2ce;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.65);
+    }
+
+    .btn-unlock-chains:active {
+      transform: translateY(0);
+    }
+
+    /* ======================================================================
+       CONTENEDOR PRINCIPAL DEL TABLÓN / EDICTO
+       ====================================================================== */
+    .stage-wrapper {
+      position: relative;
+      z-index: 3;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 24px 80px 24px;
+    }
+
+    .scroll-assembly {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      max-width: 980px;
+      width: 100%;
+    }
+
+    .gothic-left-menu {
+      position: sticky;
+      top: 40px;
+      width: 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 8px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.45) 50%, rgba(255,255,255,0.03) 100%),
+        linear-gradient(180deg, #1f1b17 0%, #110f0d 55%, #090807 100%);
+      border: 2px solid #443726;
+      outline: 1px solid #060504;
+      border-radius: 3px;
+      box-shadow:
+        0 16px 38px rgba(0, 0, 0, 0.9),
+        inset 0 1px 0 rgba(240, 201, 107, 0.18),
+        inset 0 0 16px rgba(0, 0, 0, 0.8);
+      z-index: 25;
+      flex-shrink: 0;
+    }
+
+    .menu-sigil {
+      font-family: 'UnifrakturMaguntia', serif;
+      font-size: 16px;
+      color: var(--gold-mid);
+      line-height: 1;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(197, 155, 67, 0.25);
+      width: 100%;
+      text-align: center;
+      text-shadow: 0 1px 2px #000;
+    }
+
+    .menu-sep {
+      width: 72%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(197, 155, 67, 0.35), transparent);
+      margin: 2px 0;
+    }
+
+    .cog-btn {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255, 225, 160, 0.14), transparent 55%),
+        linear-gradient(180deg, #27221d 0%, #13100d 100%);
+      border: 1px solid var(--gold-dark);
+      box-shadow:
+        0 0 0 1px #060504,
+        0 4px 8px rgba(0, 0, 0, 0.75),
+        inset 0 1px 0 rgba(255, 235, 190, 0.14);
+      color: var(--gold-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 2px;
+      transition: all 0.22s var(--ease-gothic);
+    }
+
+    .cog-btn:hover {
+      border-color: var(--gold-bright);
+      background:
+        radial-gradient(circle at 30% 25%, rgba(240, 201, 107, 0.22), transparent 60%),
+        linear-gradient(180deg, #352c23 0%, #1a1511 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 0 14px rgba(240, 201, 107, 0.32);
+    }
+
+    .cog-btn:active {
+      transform: translateY(1px);
+    }
+
+    .cog-btn.active {
+      border-color: var(--crimson-bright);
+      background:
+        radial-gradient(circle at 50% 45%, rgba(200, 35, 20, 0.35), transparent 70%),
+        linear-gradient(180deg, #421111 0%, #1b0707 100%);
+      color: #ffd98e;
+      box-shadow: 0 0 14px rgba(184, 29, 29, 0.55);
+    }
+
+    .cog-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+    }
+
+    .speed-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 3px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px;
+      font-weight: bold;
+      color: var(--gold-bright);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 0 2px;
+      border-radius: 2px;
+      line-height: 1.1;
+    }
+
+    .cog-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 56px;
+      top: 50%;
+      transform: translateY(-50%) translateX(-6px);
+      background: #14110e;
+      color: var(--gold-bright);
+      border: 1px solid var(--gold-dark);
+      padding: 5px 10px;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.22s var(--ease-gothic);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.88);
+      z-index: 60;
+    }
+
+    .cog-btn:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    .panel-cutout-wrapper {
+      position: relative;
+      flex: 1;
+      border-radius: 3px;
+      filter: drop-shadow(0 26px 70px rgba(0, 0, 0, 0.95));
+      z-index: 2;
+      isolation: isolate;
+      transition: filter 0.5s var(--ease-gothic);
+    }
+
+    #tablet-surface {
+      position: relative;
+      background:
+        radial-gradient(ellipse at 50% 12%, rgba(255, 246, 218, 0.6), transparent 65%),
+        radial-gradient(ellipse at 18% 88%, rgba(139, 108, 62, 0.36), transparent 60%),
+        linear-gradient(180deg, #e7d5af 0%, #cdb27f 48%, #b99a62 100%);
+      border: 6px solid #2b2218;
+      outline: 2px solid var(--gold-mid);
+      outline-offset: -10px;
+      box-shadow: inset 0 0 75px rgba(66, 43, 16, 0.58);
+      padding: 44px 54px 44px 54px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    #tablet-surface::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(60, 40, 15, 0.03) 0px, rgba(60, 40, 15, 0.03) 1px, transparent 1px, transparent 3px),
+        repeating-linear-gradient(90deg, rgba(60, 40, 15, 0.025) 0px, rgba(60, 40, 15, 0.025) 1px, transparent 1px, transparent 4px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #burn-rims-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 14;
+      overflow: hidden;
+      border-radius: 3px;
+    }
+
+    .burn-rim {
+      position: absolute;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0.35);
+      pointer-events: none;
+      background: transparent;
+      animation: burnRimPop 0.35s var(--ease-snap) forwards;
+      box-shadow:
+        0 0 0 2px rgba(18, 9, 3, 0.96),
+        0 0 6px 3px rgba(46, 17, 5, 0.92),
+        0 0 13px 4px rgba(255, 105, 18, 0.5),
+        inset 0 0 6px 2px rgba(255, 155, 45, 0.65);
+    }
+
+    @keyframes burnRimPop {
+      0% { transform: translate(-50%, -50%) scale(0.35); opacity: 0.4; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+
+    .rivet {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #d6b265, #574018 70%, #1c1408);
+      border: 1px solid #1a1207;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.7);
+      z-index: 5;
+    }
+    .rivet.tl { top: 14px; left: 14px; }
+    .rivet.tr { top: 14px; right: 14px; }
+    .rivet.bl { bottom: 14px; left: 14px; }
+    .rivet.br { bottom: 14px; right: 14px; }
+
+    .tablet-header {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 16px 20px 24px 20px;
+      margin-bottom: 30px;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(197, 155, 67, 0.24), transparent 72%),
+        linear-gradient(180deg, rgba(42, 24, 10, 0.08) 0%, rgba(111, 17, 17, 0.06) 100%);
+      border-top: 2px solid rgba(110, 78, 22, 0.55);
+      border-bottom: 3px double rgba(70, 46, 18, 0.78);
+    }
+
+    .header-banner-ribbon {
+      display: inline-block;
+      background: linear-gradient(90deg, #4b0909 0%, #8a1414 50%, #4b0909 100%);
+      color: #f8de96;
+      border: 1px solid #d4a84f;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,240,190,0.3);
+      padding: 5px 18px;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%);
+    }
+
+    .mechanicus-medallion-frame {
+      width: 122px;
+      height: 122px;
+      margin: 0 auto 14px auto;
+      border-radius: 50%;
+      padding: 4px;
+      background: radial-gradient(circle at 30% 25%, #f3d282, #8f6722 65%, #2b1d08 100%);
+      border: 2px solid #241608;
+      box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.5),
+        inset 0 1px 3px rgba(255, 245, 210, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: transform 0.5s var(--ease-gothic);
+    }
+
+    .mechanicus-medallion-frame:hover {
+      transform: scale(1.04) rotate(2deg);
+    }
+
+    .mechanicus-medallion-svg {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: block;
+    }
+
+    .edict-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(23px, 3.4vw, 35px);
+      font-weight: 900;
+      color: #190f07;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      line-height: 1.18;
+      text-shadow:
+        0 1px 0 rgba(255, 246, 218, 0.78),
+        0 3px 8px rgba(111, 17, 17, 0.18);
+    }
+
+    .ornament-rule {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 10px auto 8px auto;
+      max-width: 420px;
+      color: var(--ink-red);
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .ornament-rule::before,
+    .ornament-rule::after {
+      content: '';
+      flex: 1;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent, rgba(111, 17, 17, 0.65), rgba(197, 155, 67, 0.8));
+    }
+
+    .ornament-rule::after {
+      background: linear-gradient(270deg, transparent, rgba(111, 17, 17, 0.65), rgba(197, 155, 67, 0.8));
+    }
+
+    .edict-subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      color: #462e13;
+      text-transform: uppercase;
+    }
+
+    .manuscript-body {
+      position: relative;
+      z-index: 2;
+      font-size: clamp(18px, 2.05vw, 21px);
+      line-height: 1.68;
+      color: var(--ink-black);
+      min-height: 360px;
+    }
+
+    .manuscript-body p {
+      margin-bottom: 20px;
+      text-align: justify;
+      hyphens: auto;
+    }
+
+    .dropcap {
+      float: left;
+      font-family: 'UnifrakturMaguntia', 'Cinzel Decorative', serif;
+      font-size: 64px;
+      line-height: 0.82;
+      padding-right: 12px;
+      padding-top: 4px;
+      color: var(--ink-red);
+      text-shadow: 1px 1px 0 rgba(255, 235, 190, 0.7), 2px 2px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    .high-gothic {
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      color: var(--ink-red);
+      letter-spacing: 0.04em;
+    }
+
+    .gold-emphasis {
+      font-weight: 700;
+      color: #3d2406;
+      background: linear-gradient(180deg, transparent 62%, rgba(212, 162, 56, 0.35) 62%);
+      padding: 0 3px;
+    }
+
+    .oath-line {
+      display: block;
+      margin-top: 10px;
+      padding: 14px 18px;
+      border-left: 4px solid var(--ink-red);
+      background: rgba(111, 17, 17, 0.07);
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 0.96em;
+      color: #1f1209;
+    }
+
+    #quill-pen {
+      position: absolute;
+      width: 68px;
+      height: 68px;
+      pointer-events: none;
+      z-index: 30;
+      transform-origin: 6px 62px;
+      transition: opacity 0.3s var(--ease-gothic);
+      filter: drop-shadow(3px 6px 5px rgba(0, 0, 0, 0.45));
+      opacity: 0;
+    }
+
+    #quill-pen.writing {
+      opacity: 1;
+      animation: quillScratch 0.22s infinite alternate ease-in-out;
+    }
+
+    @keyframes quillScratch {
+      0% { transform: rotate(-6deg) translateY(0px); }
+      100% { transform: rotate(4deg) translateY(-3px); }
+    }
+
+    .ink-spark {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffdf85, #b81d1d);
+      pointer-events: none;
+      z-index: 29;
+      animation: sparkFade 0.55s forwards ease-out;
+    }
+
+    @keyframes sparkFade {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--dx), var(--dy)) scale(0.1); opacity: 0; }
+    }
+
+    .purity-seal-zone {
+      position: relative;
+      z-index: 4;
+      margin-top: 38px;
+      padding-top: 28px;
+      border-top: 1px dashed rgba(75, 53, 25, 0.55);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      opacity: 0;
+      transform: translateY(24px);
+      pointer-events: none;
+      transition: opacity 0.75s var(--ease-gothic), transform 0.85s var(--ease-gothic);
+    }
+
+    .purity-seal-zone.revealed {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .seal-totem {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: scale(1.22) rotate(-10deg);
+      opacity: 0;
+      transition: transform 0.65s var(--ease-snap), opacity 0.4s ease;
+    }
+
+    .purity-seal-zone.revealed .seal-totem {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+
+    .wax-seal-medallion {
+      position: relative;
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255, 175, 165, 0.38), transparent 45%),
+        radial-gradient(circle at 65% 75%, rgba(25, 0, 0, 0.65), transparent 60%),
+        radial-gradient(circle at 45% 45%, #c42323 0%, #861010 58%, #470404 100%);
+      border: 3px solid #590707;
+      box-shadow:
+        0 0 0 3px rgba(110, 12, 12, 0.45),
+        0 10px 22px rgba(0, 0, 0, 0.6),
+        inset 0 2px 8px rgba(255, 190, 180, 0.4),
+        inset 0 -6px 12px rgba(15, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+    }
+
+    .wax-inner-ring {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(245, 195, 185, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3d0404;
+    }
+
+    .wax-inner-ring svg {
+      width: 54px;
+      height: 54px;
+      fill: currentColor;
+    }
+
+    .ribbons-pair {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: -14px;
+      z-index: 2;
+    }
+
+    .seal-ribbon {
+      width: 104px;
+      min-height: 178px;
+      background:
+        linear-gradient(90deg, rgba(65, 42, 16, 0.14) 0%, rgba(255, 248, 226, 0.45) 50%, rgba(65, 42, 16, 0.16) 100%),
+        linear-gradient(180deg, #ead8b2 0%, #d8be8c 75%, #c4a66e 100%);
+      border: 1px solid #8c6e3e;
+      box-shadow: 2px 8px 14px rgba(0, 0, 0, 0.38);
+      padding: 20px 8px 26px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: 11px;
+      line-height: 1.25;
+      letter-spacing: 0.08em;
+      color: #241508;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 91%, 0 100%);
+      transition: transform 0.4s var(--ease-gothic);
+    }
+
+    .seal-ribbon.left-ribbon { transform: rotate(-1.5deg); }
+    .seal-ribbon.right-ribbon { transform: rotate(1.5deg); }
+
+    .seal-totem:hover .seal-ribbon.left-ribbon { transform: rotate(-3deg) translateY(2px); }
+    .seal-totem:hover .seal-ribbon.right-ribbon { transform: rotate(3deg) translateY(2px); }
+
+    .ribbon-star {
+      color: var(--ink-red);
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .imperial-edict-btn {
+      position: relative;
+      background:
+        linear-gradient(180deg, #241a12 0%, #140e09 100%);
+      color: #f3d282;
+      border: 1px solid #b88c38;
+      outline: 1px solid #160f09;
+      outline-offset: -4px;
+      padding: 14px 36px;
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 1px;
+      box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.55),
+        inset 0 0 18px rgba(197, 155, 67, 0.14);
+      transition: all 0.28s var(--ease-gothic);
+    }
+
+    .imperial-edict-btn::before,
+    .imperial-edict-btn::after {
+      content: '✦';
+      color: #d4a64a;
+      font-size: 10px;
+      transition: transform 0.28s var(--ease-gothic), color 0.28s var(--ease-gothic);
+    }
+
+    .imperial-edict-btn:hover {
+      background:
+        linear-gradient(180deg, #331412 0%, #1c0908 100%);
+      border-color: #f2cb6b;
+      color: #fff0c4;
+      box-shadow:
+        0 10px 26px rgba(0, 0, 0, 0.68),
+        0 0 18px rgba(197, 155, 67, 0.25),
+        inset 0 0 22px rgba(184, 29, 29, 0.24);
+      transform: translateY(-2px);
+    }
+
+    .imperial-edict-btn:hover::before,
+    .imperial-edict-btn:hover::after {
+      color: #f2cb6b;
+      transform: scale(1.25);
+    }
+
+    .bottom-logos-row {
+      width: 100%;
+      margin-top: 10px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(75, 53, 25, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .bottom-logo-left,
+    .bottom-logo-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .bottom-logo-left img,
+    .bottom-logo-right img {
+      max-height: 54px;
+      max-width: 210px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.32));
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 4, 3, 0);
+      backdrop-filter: blur(0px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.42s var(--ease-gothic), background-color 0.42s var(--ease-gothic), backdrop-filter 0.42s var(--ease-gothic), visibility 0.42s var(--ease-gothic);
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      background: rgba(6, 4, 3, 0.74);
+      backdrop-filter: blur(4px);
+    }
+
+    .letter-sign-card {
+      background:
+        radial-gradient(ellipse at 50% 10%, rgba(255, 245, 218, 0.55), transparent 65%),
+        linear-gradient(180deg, #e5d2ab 0%, #cbb07d 55%, #b89960 100%);
+      border: 5px solid #2b2218;
+      outline: 2px solid var(--gold-mid);
+      outline-offset: -9px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.88), inset 0 0 50px rgba(66, 43, 16, 0.45);
+      color: var(--ink-black);
+      max-width: 470px;
+      width: 100%;
+      padding: 28px 30px;
+      position: relative;
+      text-align: center;
+      border-radius: 3px;
+      transform: translateY(22px) scale(0.96);
+      transition: transform 0.48s var(--ease-gothic);
+    }
+
+    .modal-backdrop.open .letter-sign-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #2b2218;
+      border: 1px solid var(--gold-mid);
+      color: var(--gold-bright);
+      width: 28px;
+      height: 28px;
+      font-family: 'Cinzel', serif;
+      font-weight: bold;
+      z-index: 3;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: #461111;
+      color: #fff0c4;
+    }
+
+    .letter-sign-card h2 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 20px;
+      color: #1c130a;
+      margin-bottom: 10px;
+    }
+
+    .letter-question {
+      font-size: 18px;
+      line-height: 1.45;
+      color: #24170b;
+      margin-bottom: 16px;
+    }
+
+    .step-transition {
+      opacity: 1;
+      transform: translateY(0);
+      max-height: 220px;
+      overflow: hidden;
+      transition: opacity 0.42s var(--ease-gothic), transform 0.45s var(--ease-gothic), max-height 0.48s var(--ease-gothic), margin 0.42s var(--ease-gothic), padding 0.42s var(--ease-gothic);
+    }
+
+    .step-transition.hidden-step {
+      opacity: 0;
+      transform: translateY(12px);
+      max-height: 0;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      pointer-events: none;
+    }
+
+    .btn-accept-oath {
+      background: linear-gradient(180deg, #241a12 0%, #140e09 100%);
+      color: #f3d282;
+      border: 1px solid #b88c38;
+      padding: 10px 24px;
+      font-family: 'Cinzel', serif;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      transition: all 0.22s var(--ease-gothic);
+    }
+
+    .btn-accept-oath:hover {
+      border-color: #f2cb6b;
+      color: #fff0c4;
+      transform: translateY(-1px);
+    }
+
+    .signature-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-top: 1px dashed rgba(60, 38, 14, 0.5);
+      border-bottom: 1px dashed rgba(60, 38, 14, 0.5);
+      text-align: left;
+    }
+
+    .sig-ink-line {
+      font-family: 'Pinyon Script', cursive;
+      font-size: 32px;
+      color: var(--ink-red);
+      min-height: 40px;
+      line-height: 1.2;
+    }
+
+    .sig-role {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: #4b3519;
+      margin-top: 2px;
+    }
+
+    .forward-wrap {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn-forward-link {
+      background: #1d150e;
+      color: var(--gold-bright);
+      border: 1.5px solid var(--gold-mid);
+      padding: 11px 22px;
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: all 0.22s var(--ease-gothic);
+    }
+
+    .btn-forward-link:hover {
+      background: #2e2116;
+      border-color: var(--gold-bright);
+      transform: translateY(-1px);
+    }
+
+    /* ======================================================================
+       EASTER EGG: CANAL VOX HERÉTICO (RUPTURA DE 4ª PARED + CORTE DE SEÑAL)
+       ====================================================================== */
+    #heretic-vox-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(5, 2, 2, 0.86);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.35s var(--ease-gothic), visibility 0.35s var(--ease-gothic);
+    }
+
+    #heretic-vox-overlay.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .vox-terminal {
+      width: 100%;
+      max-width: 555px;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 35, 25, 0.035) 0px,
+          rgba(255, 35, 25, 0.035) 1px,
+          transparent 1px,
+          transparent 3px
+        ),
+        linear-gradient(180deg, #1b0909 0%, #0d0405 60%, #060202 100%);
+      border: 2px solid #8f1919;
+      outline: 1px solid #290505;
+      outline-offset: -6px;
+      border-radius: 4px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.98), 0 0 28px rgba(185, 20, 20, 0.28);
+      color: #f3d6d2;
+      overflow: hidden;
+      transform: scale(0.95) translateY(14px);
+      transition: transform 0.38s var(--ease-gothic);
+    }
+
+    #heretic-vox-overlay.open .vox-terminal {
+      transform: scale(1) translateY(0);
+    }
+
+    .vox-terminal.severed {
+      border-color: #4a1212;
+      animation: voxSignalCut 0.38s steps(2, end);
+    }
+
+    @keyframes voxSignalCut {
+      0% { filter: brightness(1.6) contrast(1.8); transform: translateX(-5px); }
+      50% { filter: brightness(0.4) contrast(2.2); transform: translateX(5px); }
+      100% { filter: brightness(1) contrast(1); transform: translateX(0); }
+    }
+
+    .vox-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      background: linear-gradient(90deg, #430808 0%, #1a0506 100%);
+      border-bottom: 1px solid rgba(220, 65, 55, 0.35);
+    }
+
+    .vox-traitor-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .traitor-avatar-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 4px;
+      border: 1.5px solid #d62828;
+      background: #120405;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 0 14px rgba(255, 40, 30, 0.35);
+      animation: avatarGlitch 3.4s infinite;
+    }
+
+    @keyframes avatarGlitch {
+      0%, 94%, 100% { transform: translate(0, 0); }
+      95% { transform: translate(-2px, 1px); }
+      97% { transform: translate(2px, -1px); }
+    }
+
+    .traitor-avatar-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+
+    .vox-meta-title {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: #ff9c92;
+      text-transform: uppercase;
+    }
+
+    .vox-meta-status {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: #ff594d;
+      margin-top: 2px;
+    }
+
+    .vox-close-btn {
+      background: #1a0606;
+      border: 1px solid #7d1b1b;
+      color: #ff9c92;
+      width: 28px;
+      height: 28px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+    }
+
+    .vox-chat-log {
+      padding: 14px 16px;
+      max-height: 270px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      line-height: 1.52;
+    }
+
+    .vox-msg {
+      padding: 9px 12px;
+      border-radius: 3px;
+    }
+
+    .vox-msg.traitor {
+      background: rgba(135, 18, 18, 0.24);
+      border-left: 3px solid #e03131;
+      color: #ffe3df;
+    }
+
+    .vox-msg.user {
+      background: rgba(242, 203, 107, 0.12);
+      border-left: 3px solid #d4a84f;
+      color: #f7e6bd;
+      align-self: flex-end;
+      max-width: 88%;
+    }
+
+    .vox-msg.system-cut {
+      background: rgba(255, 45, 35, 0.14);
+      border: 1px dashed rgba(255, 80, 70, 0.55);
+      color: #ff766b;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+
+    .vox-actions-area {
+      padding: 12px 16px 16px 16px;
+      border-top: 1px solid rgba(220, 65, 55, 0.22);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .vox-choice-btn {
+      background: #240909;
+      color: #ffd8d2;
+      border: 1px solid #9e2222;
+      padding: 8px 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      border-radius: 2px;
+      transition: all 0.2s ease;
+    }
+
+    .vox-choice-btn:hover:not(:disabled) {
+      background: #420d0d;
+      border-color: #ff594d;
+      transform: translateY(-1px);
+    }
+
+    .vox-choice-btn:disabled {
+      opacity: 0.45;
+    }
+
+    #yt-audio-container {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      opacity: 0.001;
+      pointer-events: none;
+      left: -9999px;
+      top: -9999px;
+    }
+
+    @media (max-width: 760px) {
+      .stage-wrapper {
+        padding: 20px 12px 60px 12px;
+      }
+      .scroll-assembly {
+        flex-direction: column;
+        align-items: center;
+      }
+      .gothic-left-menu {
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+        padding: 8px;
+      }
+      .menu-sigil, .menu-sep {
+        display: none;
+      }
+      .cog-btn::after {
+        left: 50%;
+        top: -34px;
+        transform: translateX(-50%);
+      }
+      .cog-btn:hover::after {
+        transform: translateX(-50%);
+      }
+      #tablet-surface {
+        padding: 32px 20px 36px 20px;
+      }
+      .seal-ribbon {
+        width: 88px;
+        min-height: 164px;
+        font-size: 9.5px;
+      }
+      .bottom-logo-left img,
+      .bottom-logo-right img {
+        max-height: 40px;
+        max-width: 140px;
+      }
+      .dial-column {
+        width: 52px;
+      }
+      .dial-wheel-box {
+        width: 50px;
+        height: 60px;
+      }
+      .dial-char {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Grieta de cristal roto rompiendo la 4ª pared (Easter Egg de Horus) -->
+  <button id="heretic-rune-trigger" class="heretic-rune-trigger" title="¡Está rajando el cristal!" aria-label="Abrir canal herético">
+    <svg viewBox="0 0 80 80" aria-hidden="true">
+      <!-- Resplandor rojo detrás de la fractura -->
+      <circle cx="56" cy="24" r="22" fill="rgba(220, 35, 25, 0.24)"/>
+      <!-- Esquirlas y grietas del cristal -->
+      <polygon points="56,24 34,12 42,26" fill="rgba(255, 225, 220, 0.35)" stroke="#ff6b5e" stroke-width="1.3"/>
+      <polygon points="56,24 68,6 64,22" fill="rgba(255, 225, 220, 0.3)" stroke="#ff6b5e" stroke-width="1.3"/>
+      <polygon points="56,24 76,38 58,36" fill="rgba(255, 225, 220, 0.32)" stroke="#ff6b5e" stroke-width="1.3"/>
+      <polyline points="56,24 22,4 14,12" fill="none" stroke="#ffd8d2" stroke-width="1.6"/>
+      <polyline points="56,24 44,54 32,68" fill="none" stroke="#ff594d" stroke-width="1.7"/>
+      <polyline points="56,24 72,56 76,72" fill="none" stroke="#ffd8d2" stroke-width="1.4"/>
+      <line x1="34" y1="12" x2="22" y2="28" stroke="#ff8278" stroke-width="1.2"/>
+      <line x1="42" y1="26" x2="24" y2="44" stroke="#ff594d" stroke-width="1.3"/>
+      <circle cx="56" cy="24" r="4.2" fill="#ff3b2f" stroke="#fff0ed" stroke-width="1.2"/>
+    </svg>
+    <span class="glass-badge-tag">VOX</span>
+  </button>
+
+  <!-- Caja fuerte blindada bajo cadenas realistas y candado central de 5 campos (AOCDT) -->
+  <div id="chain-lock-overlay" role="dialog" aria-modal="true" aria-label="Caja Fuerte de Cadenas">
+    <div class="vault-door-frame" aria-hidden="true"></div>
+
+    <!-- Canvas de cadenas metálicas 3D con sombreado y caída física -->
+    <canvas id="chains-canvas" aria-hidden="true"></canvas>
+
+    <div id="padlock-panel" class="padlock-panel">
+      <span class="vault-bolt tl"></span>
+      <span class="vault-bolt tr"></span>
+      <span class="vault-bolt bl"></span>
+      <span class="vault-bolt br"></span>
+
+      <div class="padlock-shackle"></div>
+      <div class="padlock-eyebrow">++ CAJA FUERTE DEL OMNISSIAH · SELLO DE CADENAS ++</div>
+      <h2 class="padlock-title">Candado de 5 Campos</h2>
+      <p class="padlock-hint">Rota cada campo para soltar las cadenas y comenzar la escritura.</p>
+
+      <div id="dial-dials-row" class="dial-dials-row"></div>
+
+      <div id="dial-status-msg" class="dial-status-msg">ESPERANDO COMBINACIÓN DE 5 CAMPOS...</div>
+
+      <button id="btn-verify-lock" class="btn-unlock-chains">Soltar Cadenas</button>
+    </div>
+  </div>
+
+  <!-- Imagen de paisaje apocalíptico en llamas -->
+  <div id="war-photo-bg" class="war-photo-bg"></div>
+
+  <!-- Niebla animada, iluminación de fuego, explosiones lejanas, brasas y trazadores -->
+  <canvas id="effects-canvas"></canvas>
+  <div class="vignette-overlay"></div>
+
+  <!-- Reproductor de música de YouTube (https://www.youtube.com/watch?v=Ni3CazygOh4) -->
+  <div id="yt-audio-container"></div>
+
+  <main class="stage-wrapper">
+    <div class="scroll-assembly">
+
+      <!-- Menú vertical a la izquierda -->
+      <aside class="gothic-left-menu" aria-label="Controles del Escriba">
+        <div class="menu-sigil">✠</div>
+
+        <button id="btn-play-pause" class="cog-btn" data-tooltip="Pausar / Reanudar Escritura" aria-label="Pausar o reanudar">
+          <svg id="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+          <svg id="icon-play" viewBox="0 0 24 24" style="display:none;"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+
+        <button id="btn-speed" class="cog-btn" data-tooltip="Velocidad del Escriba" aria-label="Cambiar velocidad">
+          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg>
+          <span id="speed-label" class="speed-badge">1x</span>
+        </button>
+
+        <button id="btn-instant" class="cog-btn" data-tooltip="Revelar Edicto al Instante" aria-label="Completar al instante">
+          <svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
+        </button>
+
+        <button id="btn-replay" class="cog-btn" data-tooltip="Reescribir Pergamino" aria-label="Volver a empezar">
+          <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+        </button>
+
+        <div class="menu-sep"></div>
+
+        <button id="btn-shots" class="cog-btn active" data-tooltip="Disparos (Clic = Ráfaga)" aria-label="Disparos">
+          <svg viewBox="0 0 24 24"><path d="M12 2L9.5 8.5 3 11l6.5 2.5L12 20l2.5-6.5L21 11l-6.5-2.5L12 2zm0 5.5L13.2 10l2.5 1.2-2.5 1.2L12 15l-1.2-2.6-2.5-1.2 2.5-1.2L12 7.5z"/></svg>
+        </button>
+
+        <button id="btn-audio" class="cog-btn active" data-tooltip="Música Warhammer (YouTube)" aria-label="Activar o silenciar música">
+          <svg id="icon-sound-off" viewBox="0 0 24 24" style="display:none;"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+          <svg id="icon-sound-on" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </button>
+      </aside>
+
+      <div id="panel-cutout-wrapper" class="panel-cutout-wrapper">
+        <article id="tablet-surface">
+          <span class="rivet tl"></span>
+          <span class="rivet tr"></span>
+          <span class="rivet bl"></span>
+          <span class="rivet br"></span>
+
+          <header class="tablet-header">
+            <div class="header-banner-ribbon">++ DAWN OF WAR IV · COMMANDER EDITION ++</div>
+
+            <div class="mechanicus-medallion-frame">
+              <svg class="mechanicus-medallion-svg" viewBox="0 0 200 200" role="img" aria-label="Emblema del Adeptus Mechanicus">
+                <defs>
+                  <radialGradient id="mechHalfLight" cx="35%" cy="30%" r="70%">
+                    <stop offset="0%" stop-color="#f2d69c"/>
+                    <stop offset="65%" stop-color="#c99f57"/>
+                    <stop offset="100%" stop-color="#7c5820"/>
+                  </radialGradient>
+                  <radialGradient id="mechHalfDark" cx="65%" cy="35%" r="70%">
+                    <stop offset="0%" stop-color="#293642"/>
+                    <stop offset="65%" stop-color="#141b22"/>
+                    <stop offset="100%" stop-color="#070a0d"/>
+                  </radialGradient>
+                </defs>
+                <circle cx="100" cy="100" r="98" fill="#1b140d"/>
+                <path d="M100 14 A86 86 0 0 0 100 186 Z" fill="url(#mechHalfLight)"/>
+                <path d="M100 14 A86 86 0 0 1 100 186 Z" fill="url(#mechHalfDark)"/>
+                <g fill="#4f6d82" stroke="#14110e" stroke-width="2">
+                  <rect x="92" y="2" width="16" height="16" rx="2"/>
+                  <rect x="92" y="182" width="16" height="16" rx="2"/>
+                  <rect x="2" y="92" width="16" height="16" rx="2"/>
+                  <rect x="182" y="92" width="16" height="16" rx="2"/>
+                  <rect x="27" y="27" width="15" height="15" rx="2" transform="rotate(-45 34.5 34.5)"/>
+                  <rect x="158" y="27" width="15" height="15" rx="2" transform="rotate(45 165.5 34.5)"/>
+                  <rect x="27" y="158" width="15" height="15" rx="2" transform="rotate(45 165.5 165.5)"/>
+                  <rect x="158" y="158" width="15" height="15" rx="2" transform="rotate(-45 165.5 165.5)"/>
+                  <rect x="55" y="9" width="14" height="14" rx="2" transform="rotate(-22.5 62 16)"/>
+                  <rect x="131" y="9" width="14" height="14" rx="2" transform="rotate(22.5 138 16)"/>
+                  <rect x="55" y="177" width="14" height="14" rx="2" transform="rotate(22.5 62 184)"/>
+                  <rect x="131" y="177" width="14" height="18" rx="2" transform="rotate(-22.5 138 184)"/>
+                  <rect x="9" y="55" width="14" height="14" rx="2" transform="rotate(-67.5 16 62)"/>
+                  <rect x="177" y="55" width="14" height="14" rx="2" transform="rotate(67.5 184 62)"/>
+                  <rect x="9" y="131" width="14" height="14" rx="2" transform="rotate(67.5 16 138)"/>
+                  <rect x="177" y="131" width="14" height="14" rx="2" transform="rotate(-67.5 184 138)"/>
+                </g>
+                <circle cx="100" cy="100" r="82" fill="none" stroke="#364d5e" stroke-width="14"/>
+                <circle cx="100" cy="100" r="89" fill="none" stroke="#14100c" stroke-width="2.5"/>
+                <circle cx="100" cy="100" r="75" fill="none" stroke="#14100c" stroke-width="2.5"/>
+                <path d="M56 56 Q76 44 98 48 L98 152 L74 152 L70 132 L54 126 Z" fill="#23313d" stroke="#100d0a" stroke-width="3"/>
+                <circle cx="76" cy="104" r="19" fill="#151e26" stroke="#4d687d" stroke-width="3"/>
+                <line x1="60" y1="96" x2="92" y2="96" stroke="#8aa6bd" stroke-width="2.5"/>
+                <line x1="59" y1="104" x2="93" y2="104" stroke="#8aa6bd" stroke-width="2.5"/>
+                <line x1="60" y1="112" x2="92" y2="112" stroke="#8aa6bd" stroke-width="2.5"/>
+                <path d="M62 62 C46 72, 42 94, 52 114" fill="none" stroke="#1c2730" stroke-width="6" stroke-linecap="round"/>
+                <path d="M102 48 Q134 48 146 76 Q152 96 140 116 L132 126 L130 150 L102 150 Z" fill="#ebd2a0" stroke="#1b1209" stroke-width="3"/>
+                <path d="M108 82 L134 86 L128 104 L106 98 Z" fill="#18110b"/>
+                <path d="M102 114 L110 124 L102 126 Z" fill="#18110b"/>
+                <path d="M104 134 V150 M111 134 V150 M118 134 V150 M125 134 V150" stroke="#1b1209" stroke-width="2.5"/>
+                <line x1="100" y1="16" x2="100" y2="184" stroke="#120d08" stroke-width="3.5"/>
+              </svg>
+            </div>
+
+            <h1 class="edict-title">Edicto de Venganza y Reluciente Gloria</h1>
+            <div class="ornament-rule"><span>✠</span></div>
+            <div class="edict-subtitle">Por la Voluntad del Trono Dorado y las Arenas de Terra</div>
+          </header>
+
+          <div id="manuscript-container" class="manuscript-body"></div>
+
+          <svg id="quill-pen" viewBox="0 0 80 80" aria-hidden="true">
+            <path d="M6 74 L16 58 L22 64 Z" fill="#1a120b"/>
+            <path d="M16 58 C26 38, 46 16, 74 6 C68 24, 54 44, 34 56 L22 64 Z" fill="#f7eed7" stroke="#6e4e16" stroke-width="1.5"/>
+            <path d="M14 62 C32 44, 50 26, 74 6" stroke="#b8892d" stroke-width="2" fill="none"/>
+            <path d="M44 24 L38 20 M54 16 L47 13 M34 34 L28 31 M48 36 L55 37 M38 46 L45 47" stroke="#8a6520" stroke-width="1.2"/>
+          </svg>
+
+          <footer id="purity-seal-zone" class="purity-seal-zone">
+            <div class="seal-totem">
+              <div class="wax-seal-medallion" aria-hidden="true">
+                <div class="wax-inner-ring">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 2C7.4 2 4 5.4 4 9.8c0 2.9 1.5 5.4 3.8 6.8V20c0 .6.4 1 1 1h6.4c.6 0 1-.4 1-1v-3.4c2.3-1.4 3.8-3.9 3.8-6.8C20 5.4 16.6 2 12 2zm-2.4 9.5c-.9 0-1.6-.7-1.6-1.6s.7-1.6 1.6-1.6 1.6.7 1.6 1.6-.7 1.6-1.6 1.6zm4.8 0c-.9 0-1.6-.7-1.6-1.6s.7-1.6 1.6-1.6 1.6.7 1.6 1.6-.7 1.6-1.6 1.6zM9.8 18.2v-2.1h1.1v2.1H9.8zm3.3 0v-2.1h1.1v2.1h-1.1z"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="ribbons-pair">
+                <div class="seal-ribbon left-ribbon">
+                  <span>IMPERATOR<br/>PROTEGIT</span>
+                  <span class="ribbon-star">✦</span>
+                  <span>GLORIA<br/>CALVITII</span>
+                  <span class="ribbon-star">✦</span>
+                  <span>LUX<br/>AETERNA</span>
+                </div>
+                <div class="seal-ribbon right-ribbon">
+                  <span>BELLUM<br/>AETERNUM</span>
+                  <span class="ribbon-star">✦</span>
+                  <span>DAWN OF<br/>WAR IV</span>
+                  <span class="ribbon-star">✦</span>
+                  <span>VICTORIA<br/>AUT MORS</span>
+                </div>
+              </div>
+            </div>
+
+            <button id="btn-claim-gift" class="imperial-edict-btn">
+              <span>RECLAMAR RELIQUIA IMPERIAL</span>
+            </button>
+
+            <div class="bottom-logos-row">
+              <div class="bottom-logo-left">
+                <img
+                  src="https://1000logos.net/wp-content/uploads/2022/11/Warhammer-logo.png"
+                  alt="Warhammer Logo"
+                />
+              </div>
+
+              <div class="bottom-logo-right">
+                <img
+                  src="https://cdn.saffire.com/images.ashx?t=ig&rid=VisitGarlandTX&i=Warhammer.png&cb=3447605B"
+                  alt="Warhammer Official Product Logo"
+                />
+              </div>
+            </div>
+          </footer>
+        </article>
+
+        <div id="burn-rims-layer"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="gift-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="letter-sign-card">
+      <button id="close-gift-modal" class="modal-close" aria-label="Cerrar">✕</button>
+      <h2>Edicto de Comandante</h2>
+      <p id="accept-question-text" class="letter-question">
+        ¿Aceptas <strong>Warhammer 40,000: Dawn of War IV — Commander Edition</strong> y el mando imperial?
+      </p>
+
+      <div id="accept-buttons-row" class="step-transition">
+        <button id="btn-accept-yes" class="btn-accept-oath">Acepto</button>
+      </div>
+
+      <div id="signature-stage" class="signature-box step-transition hidden-step">
+        <div id="signature-ink" class="sig-ink-line"></div>
+        <div class="sig-role">Comandante Calvus Aurelius · Señor del Brillo Solar</div>
+      </div>
+
+      <div id="forward-actions" class="forward-wrap step-transition hidden-step">
+        <button id="btn-forward-site" class="btn-forward-link">Reenviar a Steam</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Easter Egg: Canal Vox de Horus -->
+  <div id="heretic-vox-overlay" role="dialog" aria-modal="true" aria-label="Canal Vox Corrupto">
+    <div id="vox-terminal" class="vox-terminal">
+      <div class="vox-header">
+        <div class="vox-traitor-profile">
+          <div class="traitor-avatar-box" aria-hidden="true">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkXmVT2dlT6oVHBJwBrOW6tfqw-AOg8zEiK46WniogAQ&s=10"
+              alt="Horus Lupercal"
+            />
+          </div>
+          <div>
+            <div class="vox-meta-title">Horus Lupercal · Señor de la Guerra</div>
+            <div id="vox-status-line" class="vox-meta-status">ENLACE WARP INTERCEPTADO // RASTREANDO...</div>
+          </div>
+        </div>
+        <button id="vox-close-btn" class="vox-close-btn" aria-label="Cerrar canal vox">✕</button>
+      </div>
+
+      <div id="vox-chat-log" class="vox-chat-log"></div>
+
+      <div id="vox-actions-area" class="vox-actions-area"></div>
+    </div>
+  </div>
+
+  <script>
+    const YOUTUBE_VIDEO_ID = "Ni3CazygOh4";
+    const URL_REDIRECCION_STEAM = "https://store.steampowered.com/app/2272360/Warhammer_40000_Dawn_of_War_IV/";
+    const COMBINACION_CORRECTA = "AOCDT";
+    const ALFABETO_CANDADO = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    let isVaultLocked = true;
+
+    /* ==========================================================================
+       0. MOTOR DE AUDIO COMPARTIDO (MÚSICA DE FONDO + SONIDO DE ESCRITURA)
+       ========================================================================== */
+    const ytContainer = document.getElementById("yt-audio-container");
+    const btnAudio = document.getElementById("btn-audio");
+    const iconSoundOff = document.getElementById("icon-sound-off");
+    const iconSoundOn = document.getElementById("icon-sound-on");
+
+    class ImperialAudioSystem {
+      constructor() {
+        this.ctx = null;
+        this.timer = null;
+        this.step = 0;
+        this.running = false;
+      }
+
+      ensureCtx() {
+        if (!this.ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AC();
+        }
+        if (this.ctx.state === "suspended") {
+          this.ctx.resume().catch(() => {});
+        }
+      }
+
+      playQuillStroke() {
+        try {
+          this.ensureCtx();
+          if (!this.ctx || this.ctx.state !== "running") return;
+          const now = this.ctx.currentTime;
+
+          const bufferSize = Math.floor(this.ctx.sampleRate * 0.028);
+          const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.45));
+          }
+
+          const noise = this.ctx.createBufferSource();
+          noise.buffer = buffer;
+
+          const bandpass = this.ctx.createBiquadFilter();
+          bandpass.type = "bandpass";
+          bandpass.frequency.setValueAtTime(1650 + Math.random() * 650, now);
+          bandpass.Q.setValueAtTime(3.2, now);
+
+          const gain = this.ctx.createGain();
+          gain.gain.setValueAtTime(0.032, now);
+          gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.028);
+
+          noise.connect(bandpass);
+          bandpass.connect(gain);
+          gain.connect(this.ctx.destination);
+          noise.start(now);
+        } catch (_) {}
+      }
+
+      playDroneChord(freqs) {
+        if (!this.ctx || this.ctx.state !== "running") return;
+        const now = this.ctx.currentTime;
+        freqs.forEach((f) => {
+          const osc = this.ctx.createOscillator();
+          const filter = this.ctx.createBiquadFilter();
+          const gain = this.ctx.createGain();
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(f, now);
+          filter.type = "lowpass";
+          filter.frequency.setValueAtTime(480, now);
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.022, now + 0.6);
+          gain.gain.exponentialRampToValueAtTime(0.0008, now + 2.4);
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 2.45);
+        });
+      }
+
+      playPulse(accent = false) {
+        if (!this.ctx || this.ctx.state !== "running") return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(accent ? 92 : 68, now);
+        osc.frequency.exponentialRampToValueAtTime(30, now + 0.35);
+        gain.gain.setValueAtTime(accent ? 0.14 : 0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      }
+
+      startScore() {
+        this.running = true;
+        this.ensureCtx();
+        if (this.timer) clearInterval(this.timer);
+        const chords = [
+          [73.42, 146.83, 220.00],
+          [58.27, 116.54, 174.61],
+          [49.00, 98.00, 146.83],
+          [55.00, 110.00, 164.81]
+        ];
+        const tick = () => {
+          if (!this.running) return;
+          this.ensureCtx();
+          const b = this.step % 8;
+          if (b % 2 === 0) this.playDroneChord(chords[Math.floor(b / 2)]);
+          this.playPulse(b % 4 === 0);
+          this.step++;
+        };
+        tick();
+        this.timer = setInterval(tick, 680);
+      }
+
+      stopScore() {
+        this.running = false;
+        if (this.timer) {
+          clearInterval(this.timer);
+          this.timer = null;
+        }
+      }
+    }
+
+    const imperialAudio = new ImperialAudioSystem();
+    let musicEnabled = true;
+
+    function syncAudioIcon() {
+      btnAudio.classList.toggle("active", musicEnabled);
+      iconSoundOff.style.display = musicEnabled ? "none" : "block";
+      iconSoundOn.style.display = musicEnabled ? "block" : "none";
+    }
+
+    function enableMusicNow() {
+      musicEnabled = true;
+      syncAudioIcon();
+      ytContainer.innerHTML = `<iframe id="yt-player-frame" width="1" height="1" src="https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&loop=1&playlist=${YOUTUBE_VIDEO_ID}" allow="autoplay; encrypted-media" frameborder="0"></iframe>`;
+      imperialAudio.startScore();
+    }
+
+    function disableMusicNow() {
+      musicEnabled = false;
+      syncAudioIcon();
+      ytContainer.innerHTML = "";
+      imperialAudio.stopScore();
+    }
+
+    btnAudio.addEventListener("click", () => {
+      if (musicEnabled) disableMusicNow();
+      else enableMusicNow();
+    });
+
+    window.addEventListener("pointerdown", function unlockAudioOnce() {
+      imperialAudio.ensureCtx();
+      if (musicEnabled && !imperialAudio.running) {
+        imperialAudio.startScore();
+      }
+      window.removeEventListener("pointerdown", unlockAudioOnce);
+    }, { once: true });
+
+
+    /* ==========================================================================
+       1. CADENAS METÁLICAS REALISTAS EN CANVAS + CAÍDA FÍSICA AL DESBLOQUEAR
+       ========================================================================== */
+    const chainsCanvas = document.getElementById("chains-canvas");
+    const cctx = chainsCanvas.getContext("2d");
+
+    let chainLinks = [];
+    let chainsDropping = false;
+    let chainJitter = 0;
+
+    function buildChainLinks() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      chainsCanvas.width = vw * dpr;
+      chainsCanvas.height = vh * dpr;
+      cctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const cx = vw / 2;
+      const cy = vh / 2;
+      chainLinks = [];
+
+      function pushLink(x, y, angleRad, turned, depth = 1) {
+        chainLinks.push({
+          x,
+          y,
+          baseX: x,
+          baseY: y,
+          angle: angleRad,
+          turned,
+          depth,
+          vx: (Math.random() - 0.5) * 4.5,
+          vy: -2.2 - Math.random() * 4.2,
+          vr: (Math.random() - 0.5) * 0.16,
+          gravity: 0.36 + Math.random() * 0.14,
+          bounced: false,
+          alpha: 1
+        });
+      }
+
+      function addLineChain(x1, y1, x2, y2, stepPx = 22) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const dist = Math.hypot(dx, dy);
+        const angle = Math.atan2(dy, dx);
+        const count = Math.max(2, Math.floor(dist / stepPx));
+        for (let i = 0; i <= count; i++) {
+          const t = i / count;
+          pushLink(x1 + dx * t, y1 + dy * t, angle, i % 2 === 1, 1);
+        }
+      }
+
+      addLineChain(-30, -30, cx, cy, 22);
+      addLineChain(vw + 30, -30, cx, cy, 22);
+      addLineChain(-30, vh + 30, cx, cy, 22);
+      addLineChain(vw + 30, vh + 30, cx, cy, 22);
+
+      addLineChain(-30, cy, cx - 172, cy, 22);
+      addLineChain(vw + 30, cy, cx + 172, cy, 22);
+
+      const topY = 26;
+      const botY = vh - 26;
+      const hCount = Math.floor(vw / 23);
+      for (let i = 0; i <= hCount; i++) {
+        const x = i * 23;
+        pushLink(x, topY, 0, i % 2 === 1, 0.92);
+        pushLink(x, botY, 0, i % 2 === 0, 0.92);
+      }
+
+      const vCount = Math.floor(vh / 23);
+      for (let j = 1; j < vCount; j++) {
+        const y = j * 23;
+        pushLink(26, y, Math.PI / 2, j % 2 === 1, 0.92);
+        pushLink(vw - 26, y, Math.PI / 2, j % 2 === 0, 0.92);
+      }
+    }
+
+    function drawMetalLink(link) {
+      if (link.alpha <= 0.01) return;
+      cctx.save();
+      cctx.globalAlpha = Math.max(0, link.alpha);
+      cctx.translate(link.x, link.y);
+      cctx.rotate(link.angle);
+      cctx.scale(link.depth, link.depth);
+
+      const rx = link.turned ? 11.5 : 21.5;
+      const ry = link.turned ? 11 : 11.5;
+      const lw = link.turned ? 7.5 : 6.8;
+
+      cctx.beginPath();
+      cctx.roundRect(-rx + 2, -ry + 4, rx * 2, ry * 2, ry);
+      cctx.strokeStyle = "rgba(0, 0, 0, 0.82)";
+      cctx.lineWidth = lw + 3;
+      cctx.stroke();
+
+      const grad = cctx.createLinearGradient(-rx, -ry, rx, ry);
+      grad.addColorStop(0, "#c7b8a3");
+      grad.addColorStop(0.3, "#786a5b");
+      grad.addColorStop(0.72, "#352c24");
+      grad.addColorStop(1, "#14100d");
+
+      cctx.beginPath();
+      cctx.roundRect(-rx, -ry, rx * 2, ry * 2, ry);
+      cctx.strokeStyle = grad;
+      cctx.lineWidth = lw;
+      cctx.stroke();
+
+      cctx.beginPath();
+      cctx.roundRect(-rx + 1.5, -ry + 1.5, Math.max(4, rx * 2 - 3), Math.max(4, ry * 2 - 3), Math.max(2, ry - 1.5));
+      cctx.strokeStyle = "rgba(235, 223, 202, 0.45)";
+      cctx.lineWidth = 1.4;
+      cctx.stroke();
+
+      cctx.restore();
+    }
+
+    function renderChainsLoop() {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      cctx.clearRect(0, 0, vw, vh);
+
+      if (chainJitter > 0.05) {
+        chainJitter *= 0.86;
+      } else {
+        chainJitter = 0;
+      }
+
+      for (let i = 0; i < chainLinks.length; i++) {
+        const lk = chainLinks[i];
+        if (!chainsDropping) {
+          lk.x = lk.baseX + (Math.random() - 0.5) * chainJitter * 5;
+          lk.y = lk.baseY + (Math.random() - 0.5) * chainJitter * 5;
+        } else {
+          lk.vy += lk.gravity;
+          lk.x += lk.vx;
+          lk.y += lk.vy;
+          lk.angle += lk.vr;
+
+          if (lk.y > vh - 18 && !lk.bounced) {
+            lk.y = vh - 18;
+            lk.vy *= -0.34;
+            lk.vx *= 0.75;
+            lk.bounced = true;
+          }
+          if (lk.y > vh + 80) {
+            lk.alpha -= 0.05;
+          }
+        }
+        drawMetalLink(lk);
+      }
+
+      if (isVaultLocked || chainsDropping) {
+        requestAnimationFrame(renderChainsLoop);
+      }
+    }
+
+    window.addEventListener("resize", buildChainLinks);
+    buildChainLinks();
+    requestAnimationFrame(renderChainsLoop);
+
+    const chainLockOverlay = document.getElementById("chain-lock-overlay");
+    const padlockPanel = document.getElementById("padlock-panel");
+    const dialDialsRow = document.getElementById("dial-dials-row");
+    const dialStatusMsg = document.getElementById("dial-status-msg");
+    const btnVerifyLock = document.getElementById("btn-verify-lock");
+
+    const dialIndices = [0, 0, 0, 0, 0];
+    const dialCharEls = [];
+
+    function rotateDial(slotIndex, delta) {
+      imperialAudio.ensureCtx();
+      const len = ALFABETO_CANDADO.length;
+      dialIndices[slotIndex] = (dialIndices[slotIndex] + delta + len) % len;
+
+      const el = dialCharEls[slotIndex];
+      el.textContent = ALFABETO_CANDADO[dialIndices[slotIndex]];
+      el.classList.remove("spin-up", "spin-down");
+      void el.offsetWidth;
+      el.classList.add(delta > 0 ? "spin-up" : "spin-down");
+
+      chainJitter = 0.65;
+      imperialAudio.playQuillStroke();
+      dialStatusMsg.className = "dial-status-msg";
+      dialStatusMsg.textContent = `COMBINACIÓN ACTUAL: ${dialIndices.map((i) => ALFABETO_CANDADO[i]).join("")}`;
+    }
+
+    function buildFiveDials() {
+      dialDialsRow.innerHTML = "";
+      for (let i = 0; i < 5; i++) {
+        const col = document.createElement("div");
+        col.className = "dial-column";
+
+        const upBtn = document.createElement("button");
+        upBtn.type = "button";
+        upBtn.className = "dial-step-btn";
+        upBtn.setAttribute("aria-label", `Subir campo ${i + 1}`);
+        upBtn.textContent = "▲";
+        upBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          rotateDial(i, 1);
+        });
+
+        const wheel = document.createElement("div");
+        wheel.className = "dial-wheel-box";
+        wheel.setAttribute("role", "button");
+        wheel.setAttribute("tabindex", "0");
+        wheel.setAttribute("aria-label", `Campo ${i + 1}, clic o rueda para rotar`);
+
+        const charSpan = document.createElement("span");
+        charSpan.className = "dial-char";
+        charSpan.textContent = ALFABETO_CANDADO[dialIndices[i]];
+        dialCharEls.push(charSpan);
+        wheel.appendChild(charSpan);
+
+        wheel.addEventListener("click", () => rotateDial(i, 1));
+        wheel.addEventListener("wheel", (e) => {
+          e.preventDefault();
+          rotateDial(i, e.deltaY < 0 ? 1 : -1);
+        }, { passive: false });
+        wheel.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowUp" || e.key === "ArrowRight") {
+            e.preventDefault();
+            rotateDial(i, 1);
+          } else if (e.key === "ArrowDown" || e.key === "ArrowLeft") {
+            e.preventDefault();
+            rotateDial(i, -1);
+          } else if (e.key === "Enter") {
+            e.preventDefault();
+            verifyLockCombination();
+          }
+        });
+
+        const downBtn = document.createElement("button");
+        downBtn.type = "button";
+        downBtn.className = "dial-step-btn";
+        downBtn.setAttribute("aria-label", `Bajar campo ${i + 1}`);
+        downBtn.textContent = "▼";
+        downBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          rotateDial(i, -1);
+        });
+
+        col.appendChild(upBtn);
+        col.appendChild(wheel);
+        col.appendChild(downBtn);
+        dialDialsRow.appendChild(col);
+      }
+    }
+
+    function verifyLockCombination() {
+      imperialAudio.ensureCtx();
+      const attempt = dialIndices.map((i) => ALFABETO_CANDADO[i]).join("");
+      if (attempt === COMBINACION_CORRECTA) {
+        dialStatusMsg.className = "dial-status-msg success";
+        dialStatusMsg.textContent = "CERROJO ABIERTO — SOLTANDO CADENAS...";
+        padlockPanel.classList.add("open-shackle");
+        imperialAudio.playPulse(true);
+        if (musicEnabled && !imperialAudio.running) {
+          imperialAudio.startScore();
+        }
+        setTimeout(() => {
+          chainsDropping = true;
+          isVaultLocked = false;
+          chainLockOverlay.classList.add("unlocked");
+          rebuildPanelMask();
+          resetAndStart();
+        }, 420);
+      } else {
+        chainJitter = 1.6;
+        imperialAudio.playPulse(false);
+        padlockPanel.classList.remove("shake-error");
+        void padlockPanel.offsetWidth;
+        padlockPanel.classList.add("shake-error");
+        dialStatusMsg.className = "dial-status-msg error";
+        dialStatusMsg.textContent = "COMBINACIÓN INCORRECTA — LAS CADENAS NO CEDEN";
+      }
+    }
+
+    btnVerifyLock.addEventListener("click", verifyLockCombination);
+    buildFiveDials();
+
+
+    /* ==========================================================================
+       2. HUECOS TRANSPARENTES + FONDO CON PARALAJE + EXPLOSIONES + NIEBLA + FUEGO
+       ========================================================================== */
+    const warPhotoBg = document.getElementById("war-photo-bg");
+    const panelCutoutWrapper = document.getElementById("panel-cutout-wrapper");
+    const burnRimsLayer = document.getElementById("burn-rims-layer");
+    let autoShotsEnabled = true;
+
+    window.addEventListener("mousemove", (e) => {
+      const nx = (e.clientX / window.innerWidth - 0.5) * -16;
+      const ny = (e.clientY / window.innerHeight - 0.5) * -12;
+      warPhotoBg.style.setProperty("--px", `${nx.toFixed(1)}px`);
+      warPhotoBg.style.setProperty("--py", `${ny.toFixed(1)}px`);
+    });
+
+    const bulletHoles = [];
+
+    function rebuildPanelMask() {
+      const w = panelCutoutWrapper.offsetWidth;
+      const h = panelCutoutWrapper.offsetHeight;
+      if (!w || !h) return;
+
+      const maskCanvas = document.createElement("canvas");
+      maskCanvas.width = w;
+      maskCanvas.height = h;
+      const mctx = maskCanvas.getContext("2d");
+
+      mctx.fillStyle = "#ffffff";
+      mctx.fillRect(0, 0, w, h);
+
+      mctx.globalCompositeOperation = "destination-out";
+      bulletHoles.forEach((hole) => {
+        mctx.beginPath();
+        mctx.arc(hole.x, hole.y, hole.r, 0, Math.PI * 2);
+        mctx.fill();
+      });
+
+      const dataUrl = maskCanvas.toDataURL("image/png");
+      panelCutoutWrapper.style.webkitMaskImage = `url("${dataUrl}")`;
+      panelCutoutWrapper.style.maskImage = `url("${dataUrl}")`;
+      panelCutoutWrapper.style.webkitMaskSize = `${w}px ${h}px`;
+      panelCutoutWrapper.style.maskSize = `${w}px ${h}px`;
+      panelCutoutWrapper.style.webkitMaskRepeat = "no-repeat";
+      panelCutoutWrapper.style.maskRepeat = "no-repeat";
+    }
+
+    function addTransparentHoleThroughPanel(localX, localY, radius = 14) {
+      bulletHoles.push({ x: localX, y: localY, r: radius });
+      if (bulletHoles.length > 16) {
+        bulletHoles.shift();
+        if (burnRimsLayer.firstChild) {
+          burnRimsLayer.removeChild(burnRimsLayer.firstChild);
+        }
+      }
+
+      const rim = document.createElement("div");
+      rim.className = "burn-rim";
+      rim.style.width = `${radius * 2}px`;
+      rim.style.height = `${radius * 2}px`;
+      rim.style.left = `${localX}px`;
+      rim.style.top = `${localY}px`;
+      burnRimsLayer.appendChild(rim);
+
+      rebuildPanelMask();
+    }
+
+    function clearPanelHoles() {
+      bulletHoles.length = 0;
+      burnRimsLayer.innerHTML = "";
+      rebuildPanelMask();
+    }
+
+    const battleEffects = (() => {
+      const canvas = document.getElementById("effects-canvas");
+      const ctx = canvas.getContext("2d");
+      let w = 0, h = 0;
+      let fogClouds = [];
+      let fireLights = [];
+      let distantBlasts = [];
+      let embers = [];
+      let tracers = [];
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+
+        fogClouds = Array.from({ length: 22 }, () => ({
+          x: Math.random() * w,
+          y: h * (0.22 + Math.random() * 0.72),
+          rx: 180 + Math.random() * 270,
+          ry: 55 + Math.random() * 95,
+          vx: 0.22 + Math.random() * 0.55,
+          alpha: 0.08 + Math.random() * 0.13
+        }));
+
+        fireLights = Array.from({ length: 12 }, (_, i) => ({
+          x: (i + 0.5) * (w / 12) + (Math.random() - 0.5) * 80,
+          y: h * (0.68 + Math.random() * 0.28),
+          r: 140 + Math.random() * 190,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.003 + Math.random() * 0.004
+        }));
+
+        embers = Array.from({ length: 105 }, () => ({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: 1 + Math.random() * 2.5,
+          vy: -(0.5 + Math.random() * 1.7),
+          vx: (Math.random() - 0.5) * 0.85,
+          alpha: 0.35 + Math.random() * 0.65,
+          phase: Math.random() * Math.PI * 2
+        }));
+      }
+
+      function spawnDistantBlast() {
+        distantBlasts.push({
+          x: w * (0.1 + Math.random() * 0.8),
+          y: h * (0.25 + Math.random() * 0.48),
+          r: 35 + Math.random() * 75,
+          life: 1
+        });
+      }
+
+      function shootAtPanel() {
+        const rect = panelCutoutWrapper.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+
+        const localX = 36 + Math.random() * Math.max(60, rect.width - 72);
+        const localY = 36 + Math.random() * Math.max(80, rect.height - 72);
+        const tx = rect.left + localX;
+        const ty = rect.top + localY;
+
+        const fromLeft = Math.random() > 0.4;
+        const sx = fromLeft ? -25 : w + 25;
+        const sy = h * (0.1 + Math.random() * 0.35);
+
+        tracers.push({
+          sx, sy,
+          tx, ty,
+          localX, localY,
+          radius: 11 + Math.random() * 7,
+          progress: 0,
+          speed: 0.095 + Math.random() * 0.025
+        });
+      }
+
+      function onImpact(tr) {
+        addTransparentHoleThroughPanel(tr.localX, tr.localY, tr.radius);
+
+        for (let i = 0; i < 16; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const spd = 1.8 + Math.random() * 5.5;
+          embers.push({
+            x: tr.tx,
+            y: tr.ty,
+            r: 1.4 + Math.random() * 2.1,
+            vx: Math.cos(angle) * spd,
+            vy: Math.sin(angle) * spd - 1.2,
+            alpha: 1,
+            phase: Math.random() * 6
+          });
+        }
+      }
+
+      function render(time) {
+        ctx.clearRect(0, 0, w, h);
+
+        for (let i = distantBlasts.length - 1; i >= 0; i--) {
+          const b = distantBlasts[i];
+          b.life -= 0.022;
+          if (b.life <= 0) {
+            distantBlasts.splice(i, 1);
+            continue;
+          }
+          const grad = ctx.createRadialGradient(b.x, b.y, 4, b.x, b.y, b.r * (1.35 - b.life * 0.35));
+          grad.addColorStop(0, `rgba(255, 200, 110, ${0.32 * b.life})`);
+          grad.addColorStop(0.5, `rgba(235, 65, 15, ${0.16 * b.life})`);
+          grad.addColorStop(1, "rgba(0, 0, 0, 0)");
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.r * (1.35 - b.life * 0.35), 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        fireLights.forEach((fl) => {
+          const pulse = 0.72 + Math.sin(time * fl.speed + fl.phase) * 0.28;
+          const grad = ctx.createRadialGradient(fl.x, fl.y, 8, fl.x, fl.y, fl.r * pulse);
+          grad.addColorStop(0, `rgba(255, 130, 25, ${0.26 * pulse})`);
+          grad.addColorStop(0.55, `rgba(205, 42, 8, ${0.13 * pulse})`);
+          grad.addColorStop(1, "rgba(0, 0, 0, 0)");
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(fl.x, fl.y, fl.r * pulse, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        fogClouds.forEach((c) => {
+          c.x += c.vx;
+          if (c.x - c.rx > w) c.x = -c.rx;
+          ctx.save();
+          ctx.translate(c.x, c.y);
+          ctx.scale(1, c.ry / c.rx);
+          const fogGrad = ctx.createRadialGradient(0, 0, c.rx * 0.1, 0, 0, c.rx);
+          fogGrad.addColorStop(0, `rgba(220, 200, 180, ${c.alpha})`);
+          fogGrad.addColorStop(0.6, `rgba(145, 130, 120, ${c.alpha * 0.45})`);
+          fogGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+          ctx.fillStyle = fogGrad;
+          ctx.beginPath();
+          ctx.arc(0, 0, c.rx, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+
+        for (let i = tracers.length - 1; i >= 0; i--) {
+          const tr = tracers[i];
+          tr.progress += tr.speed;
+          const p = Math.min(1, tr.progress);
+          const x = tr.sx + (tr.tx - tr.sx) * p;
+          const y = tr.sy + (tr.ty - tr.sy) * p;
+          const tailP = Math.max(0, p - 0.22);
+          const tailX = tr.sx + (tr.tx - tr.sx) * tailP;
+          const tailY = tr.sy + (tr.ty - tr.sy) * tailP;
+
+          ctx.save();
+          ctx.strokeStyle = "#ffd670";
+          ctx.lineWidth = 2.8;
+          ctx.shadowColor = "#ff5a14";
+          ctx.shadowBlur = 12;
+          ctx.beginPath();
+          ctx.moveTo(tailX, tailY);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+          ctx.restore();
+
+          if (tr.progress >= 1) {
+            onImpact(tr);
+            tracers.splice(i, 1);
+          }
+        }
+
+        embers.forEach((e) => {
+          e.x += e.vx + Math.sin(time * 0.0025 + e.phase) * 0.35;
+          e.y += e.vy;
+          e.vy += 0.015;
+          if (e.y < -10 || e.y > h + 10) {
+            e.x = Math.random() * w;
+            e.y = h + 8;
+            e.vx = (Math.random() - 0.5) * 0.85;
+            e.vy = -(0.6 + Math.random() * 1.6);
+          }
+          ctx.fillStyle = `rgba(255, 175, 65, ${e.alpha})`;
+          ctx.beginPath();
+          ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        requestAnimationFrame(render);
+      }
+
+      setInterval(() => {
+        if (Math.random() > 0.45) spawnDistantBlast();
+        if (isVaultLocked || !autoShotsEnabled) return;
+        if (Math.random() > 0.35) shootAtPanel();
+      }, 2400);
+
+      window.addEventListener("resize", () => {
+        resize();
+        rebuildPanelMask();
+      });
+
+      resize();
+      requestAnimationFrame(render);
+
+      return { shootAtPanel };
+    })();
+
+
+    /* ==========================================================================
+       3. TEXTO COMPLETO ÍNTEGRO
+       ========================================================================== */
+    const MANUSCRIPT_DATA = [
+      {
+        dropcap: 'M',
+        segments: [
+          { text: 'e llamo ', style: '' },
+          { text: 'Máximo Décimo Meridio', style: 'high-gothic' },
+          { text: ', Comandante de los Ejércitos del Norte, General de las Legiones Félix, leal servidor del verdadero Emperador Marco Aurelio —y devoto inquebrantable del ', style: '' },
+          { text: 'Dios-Emperador de la Humanidad', style: 'gold-emphasis' },
+          { text: ' en Su Trono Dorado de Terra—.', style: '' }
+        ]
+      },
+      {
+        segments: [
+          { text: 'Padre de un hijo asesinado, marido de una mujer asesinada, y hoy comparezco ante los registros sagrados del Adeptus Administratum para hacer entrega oficial del ', style: '' },
+          { text: 'Warhammer 40,000: Dawn of War IV — Commander Edition', style: 'high-gothic' },
+          { text: ' a mi más querido amigo calvo.', style: '' }
+        ]
+      },
+      {
+        segments: [
+          { text: 'Un guerrero legendario cuya coronilla posee un pulido tan celestial y aerodinámico que el mismísimo ', style: '' },
+          { text: 'Horus Lupercal', style: 'gold-emphasis' },
+          { text: ' y ', style: '' },
+          { text: 'Abaddon el Saqueador', style: 'gold-emphasis' },
+          { text: ' sentirían una envidia capaz de desatar otra Herejía galáctica. Los Tecnomarines de Marte aún estudian cómo es posible que tu cráneo refleje la luz de diez mil soles sin necesidad de ceramita: eres el único mortal que no necesita casco de Astartes porque los disparos de bólter simplemente rebotan en esa cúpula resplandeciente.', style: '' }
+        ]
+      },
+      {
+        segments: [
+          { text: 'De hecho, el Alto Señorío de Terra contempla seriamente apagar el ', style: '' },
+          { text: 'Astronomicón', style: 'high-gothic' },
+          { text: ' —que a tu lado parece una triste vela de sebo— y sentarte a ti en una silla de playa mirando hacia la Disformidad, para que el brillo cegador de tu calva guíe a todas las flotas imperiales a través del Inmaterium sin necesidad de Navegantes ni sacrificios de psíquicos.', style: '' }
+        ]
+      },
+      {
+        segments: [
+          { text: 'Además, como buen Marine Espacial, ahorras valiosos recursos del Imperio al no gastar ni una sola gota de promethium ni de champú en mantenimiento capilar. Todo ese presupuesto ha sido redirigido directamente hacia esta reliquia estratégica de Edición Comandante, para que despliegues tus escuadras, tanques y titanes con la misma ausencia total de pelo y de piedad.', style: '' }
+        ]
+      },
+      {
+        segments: [
+          { text: '«Disfruta de tu regalo, hermano de batalla... porque cuando nuestras facciones se encuentren en el campo de batalla, ni el brillo de tu cabeza podrá cegar mi artillería. Y alcanzaré mi venganza —aplastando tu base, tus reliquias y tu ego—, en esta partida, en el cuadragésimo primer milenio, o en la otra vida».', style: 'oath-line' }
+        ]
+      }
+    ];
+
+
+    /* ==========================================================================
+       4. MOTOR DE ESCRITURA A PLUMA (SOLO ACTIVO TRAS SOLTAR CADENAS)
+       ========================================================================== */
+    const manuscriptContainer = document.getElementById("manuscript-container");
+    const tabletSurface = document.getElementById("tablet-surface");
+    const quillPen = document.getElementById("quill-pen");
+    const puritySealZone = document.getElementById("purity-seal-zone");
+
+    const speeds = [1, 2, 4];
+    let speedIndex = 0;
+    let isPaused = false;
+    let isFinished = false;
+    let typeTimeout = null;
+    let strokeCounter = 0;
+
+    let blockIdx = 0;
+    let segIdx = 0;
+    let charIdx = 0;
+    let currentP = null;
+    let currentSpan = null;
+
+    function spawnInkSpark(x, y) {
+      const spark = document.createElement("span");
+      spark.className = "ink-spark";
+      spark.style.left = `${x}px`;
+      spark.style.top = `${y}px`;
+      spark.style.setProperty("--dx", `${(Math.random() - 0.5) * 26}px`);
+      spark.style.setProperty("--dy", `${-8 - Math.random() * 18}px`);
+      tabletSurface.appendChild(spark);
+      setTimeout(() => spark.remove(), 560);
+    }
+
+    function positionQuillAtElement(targetNode) {
+      if (!targetNode) return;
+      const range = document.createRange();
+      range.selectNodeContents(targetNode);
+      range.collapse(false);
+
+      const rect = range.getBoundingClientRect();
+      const tabletRect = tabletSurface.getBoundingClientRect();
+      if (rect.width === 0 && rect.height === 0) return;
+
+      const x = rect.right - tabletRect.left;
+      const y = rect.bottom - tabletRect.top - 64;
+
+      quillPen.style.left = `${x}px`;
+      quillPen.style.top = `${y}px`;
+      quillPen.classList.add("writing");
+
+      if (Math.random() > 0.62) {
+        spawnInkSpark(x + 4, y + 60);
+      }
+    }
+
+    function finishManuscript() {
+      isFinished = true;
+      clearTimeout(typeTimeout);
+      quillPen.classList.remove("writing");
+      quillPen.style.opacity = "0";
+      puritySealZone.classList.add("revealed");
+      setTimeout(rebuildPanelMask, 80);
+    }
+
+    function stepTypewriter() {
+      if (isVaultLocked || isPaused || isFinished) return;
+
+      if (blockIdx >= MANUSCRIPT_DATA.length) {
+        finishManuscript();
+        return;
+      }
+
+      const block = MANUSCRIPT_DATA[blockIdx];
+
+      if (!currentP) {
+        currentP = document.createElement("p");
+        if (block.dropcap) {
+          const dropSpan = document.createElement("span");
+          dropSpan.className = "dropcap";
+          dropSpan.textContent = block.dropcap;
+          currentP.appendChild(dropSpan);
+        }
+        manuscriptContainer.appendChild(currentP);
+      }
+
+      if (segIdx >= block.segments.length) {
+        blockIdx++;
+        segIdx = 0;
+        charIdx = 0;
+        currentP = null;
+        currentSpan = null;
+        rebuildPanelMask();
+        typeTimeout = setTimeout(stepTypewriter, 240 / speeds[speedIndex]);
+        return;
+      }
+
+      const seg = block.segments[segIdx];
+      if (!currentSpan) {
+        currentSpan = document.createElement("span");
+        if (seg.style) currentSpan.className = seg.style;
+        currentP.appendChild(currentSpan);
+      }
+
+      const nextChar = seg.text.charAt(charIdx);
+      currentSpan.textContent += nextChar;
+      charIdx++;
+
+      strokeCounter++;
+      if (nextChar !== " " && (speeds[speedIndex] < 4 || strokeCounter % 2 === 0)) {
+        imperialAudio.playQuillStroke();
+      }
+
+      positionQuillAtElement(currentSpan);
+
+      if (charIdx >= seg.text.length) {
+        segIdx++;
+        charIdx = 0;
+        currentSpan = null;
+      }
+
+      let baseDelay = 26;
+      if (nextChar === "." || nextChar === "—") baseDelay = 135;
+      else if (nextChar === ",") baseDelay = 80;
+
+      typeTimeout = setTimeout(stepTypewriter, Math.max(6, baseDelay / speeds[speedIndex]));
+    }
+
+    function renderInstantAll() {
+      if (isVaultLocked) return;
+      clearTimeout(typeTimeout);
+      manuscriptContainer.innerHTML = "";
+
+      MANUSCRIPT_DATA.forEach((block) => {
+        const p = document.createElement("p");
+        if (block.dropcap) {
+          const dropSpan = document.createElement("span");
+          dropSpan.className = "dropcap";
+          dropSpan.textContent = block.dropcap;
+          p.appendChild(dropSpan);
+        }
+
+        block.segments.forEach((seg) => {
+          const span = document.createElement("span");
+          if (seg.style) span.className = seg.style;
+          span.textContent = seg.text;
+          p.appendChild(span);
+        });
+
+        manuscriptContainer.appendChild(p);
+      });
+
+      finishManuscript();
+    }
+
+    function resetAndStart() {
+      clearTimeout(typeTimeout);
+      manuscriptContainer.innerHTML = "";
+      clearPanelHoles();
+      puritySealZone.classList.remove("revealed");
+      quillPen.classList.remove("writing");
+      quillPen.style.opacity = "0";
+      isFinished = false;
+      isPaused = false;
+      updatePauseIcon();
+
+      blockIdx = 0;
+      segIdx = 0;
+      charIdx = 0;
+      currentP = null;
+      currentSpan = null;
+
+      if (!isVaultLocked) {
+        typeTimeout = setTimeout(stepTypewriter, 350);
+      }
+    }
+
+
+    /* ==========================================================================
+       5. CONTROLES, TRANSICIONES DE FIRMA Y REDIRECCIÓN A STEAM
+       ========================================================================== */
+    const btnPlayPause = document.getElementById("btn-play-pause");
+    const iconPause = document.getElementById("icon-pause");
+    const iconPlay = document.getElementById("icon-play");
+    const btnSpeed = document.getElementById("btn-speed");
+    const speedLabel = document.getElementById("speed-label");
+    const btnInstant = document.getElementById("btn-instant");
+    const btnReplay = document.getElementById("btn-replay");
+    const btnShots = document.getElementById("btn-shots");
+
+    function updatePauseIcon() {
+      iconPause.style.display = isPaused ? "none" : "block";
+      iconPlay.style.display = isPaused ? "block" : "none";
+    }
+
+    btnPlayPause.addEventListener("click", () => {
+      if (isVaultLocked) return;
+      if (isFinished) {
+        resetAndStart();
+        return;
+      }
+      isPaused = !isPaused;
+      updatePauseIcon();
+      if (isPaused) quillPen.classList.remove("writing");
+      else stepTypewriter();
+    });
+
+    btnSpeed.addEventListener("click", () => {
+      speedIndex = (speedIndex + 1) % speeds.length;
+      speedLabel.textContent = `${speeds[speedIndex]}x`;
+    });
+
+    btnInstant.addEventListener("click", renderInstantAll);
+    btnReplay.addEventListener("click", resetAndStart);
+
+    btnShots.addEventListener("click", () => {
+      battleEffects.shootAtPanel();
+      setTimeout(() => battleEffects.shootAtPanel(), 120);
+      autoShotsEnabled = !autoShotsEnabled;
+      btnShots.classList.toggle("active", autoShotsEnabled);
+    });
+
+    const giftModal = document.getElementById("gift-modal");
+    const btnClaimGift = document.getElementById("btn-claim-gift");
+    const closeGiftModal = document.getElementById("close-gift-modal");
+    const acceptButtonsRow = document.getElementById("accept-buttons-row");
+    const btnAcceptYes = document.getElementById("btn-accept-yes");
+    const signatureStage = document.getElementById("signature-stage");
+    const signatureInk = document.getElementById("signature-ink");
+    const forwardActions = document.getElementById("forward-actions");
+    const btnForwardSite = document.getElementById("btn-forward-site");
+
+    const FIRMA_TEXTO = "Comandante Calvus Aurelius, Señor del Brillo Solar";
+    let signInterval = null;
+    let transitionTimeout = null;
+    let isSigned = false;
+
+    function resetSignModal() {
+      clearInterval(signInterval);
+      clearTimeout(transitionTimeout);
+      isSigned = false;
+      acceptButtonsRow.classList.remove("hidden-step");
+      btnAcceptYes.disabled = false;
+      signatureStage.classList.add("hidden-step");
+      signatureInk.textContent = "";
+      forwardActions.classList.add("hidden-step");
+    }
+
+    btnClaimGift.addEventListener("click", () => {
+      resetSignModal();
+      giftModal.classList.add("open");
+    });
+
+    closeGiftModal.addEventListener("click", () => {
+      clearInterval(signInterval);
+      clearTimeout(transitionTimeout);
+      giftModal.classList.remove("open");
+    });
+
+    giftModal.addEventListener("click", (e) => {
+      if (e.target === giftModal) {
+        clearInterval(signInterval);
+        clearTimeout(transitionTimeout);
+        giftModal.classList.remove("open");
+      }
+    });
+
+    btnAcceptYes.addEventListener("click", () => {
+      btnAcceptYes.disabled = true;
+      acceptButtonsRow.classList.add("hidden-step");
+      signatureInk.textContent = "";
+
+      transitionTimeout = setTimeout(() => {
+        signatureStage.classList.remove("hidden-step");
+        let idx = 0;
+        clearInterval(signInterval);
+        signInterval = setInterval(() => {
+          signatureInk.textContent += FIRMA_TEXTO.charAt(idx);
+          imperialAudio.playQuillStroke();
+          idx++;
+          if (idx >= FIRMA_TEXTO.length) {
+            clearInterval(signInterval);
+            isSigned = true;
+            transitionTimeout = setTimeout(() => {
+              forwardActions.classList.remove("hidden-step");
+            }, 220);
+          }
+        }, 42);
+      }, 280);
+    });
+
+    btnForwardSite.addEventListener("click", () => {
+      if (!isSigned) return;
+      window.open(URL_REDIRECCION_STEAM, "_blank", "noopener,noreferrer");
+    });
+
+
+    /* ==========================================================================
+       6. EASTER EGG: CANAL VOX DE HORUS (RUPTURA DE 4ª PARED + BURLA + CORTE)
+       ========================================================================== */
+    const runeTrigger = document.getElementById("heretic-rune-trigger");
+    const voxOverlay = document.getElementById("heretic-vox-overlay");
+    const voxTerminal = document.getElementById("vox-terminal");
+    const voxStatusLine = document.getElementById("vox-status-line");
+    const voxChatLog = document.getElementById("vox-chat-log");
+    const voxActionsArea = document.getElementById("vox-actions-area");
+    const voxCloseBtn = document.getElementById("vox-close-btn");
+
+    let secretWordBuffer = "";
+
+    function appendVoxMessage(role, text) {
+      const div = document.createElement("div");
+      div.className = `vox-msg ${role}`;
+      div.textContent = text;
+      voxChatLog.appendChild(div);
+      voxChatLog.scrollTop = voxChatLog.scrollHeight;
+    }
+
+    function setVoxChoices(choices) {
+      voxActionsArea.innerHTML = "";
+      choices.forEach((ch) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "vox-choice-btn";
+        btn.textContent = ch.label;
+        btn.addEventListener("click", () => {
+          voxActionsArea.querySelectorAll("button").forEach((b) => (b.disabled = true));
+          ch.onSelect();
+        });
+        voxActionsArea.appendChild(btn);
+      });
+    }
+
+    function cutVoxSignal() {
+      voxTerminal.classList.add("severed");
+      voxStatusLine.textContent = "SEÑAL PERDIDA // CANAL CORRUPTO CERRADO";
+      imperialAudio.playPulse(false);
+      setTimeout(() => {
+        appendVoxMessage("system-cut", "■ [TRANSMISIÓN CORTADA — RASTRO DE DISFORMIDAD FIJADO EN TU PANTALLA] ■");
+        voxActionsArea.innerHTML = "";
+      }, 360);
+    }
+
+    function startHereticVoxSession() {
+      imperialAudio.ensureCtx();
+      voxTerminal.classList.remove("severed");
+      voxStatusLine.textContent = "ENLACE WARP INTERCEPTADO // RASTREANDO...";
+      voxChatLog.innerHTML = "";
+      voxActionsArea.innerHTML = "";
+      voxOverlay.classList.add("open");
+
+      appendVoxMessage("traitor", "¿En serio creías que ibas a esconderte detrás de ese pergamino? Te veo ahí mismo, moviendo el ratón al otro lado del cristal...");
+
+      setTimeout(() => {
+        appendVoxMessage("traitor", "Sí, a ti. Ya he cruzado la cuarta pared y tengo tu señal marcada. Voy directo a por ti.");
+        setVoxChoices([
+          {
+            label: "¡FOR THE EMPEROR!",
+            onSelect: () => {
+              appendVoxMessage("user", "¡FOR THE EMPEROR!");
+              setTimeout(() => {
+                appendVoxMessage("traitor", "¿En serio...? Vaya geek. Gritas «¡For the Emperor!» desde una silla con el ratón temblando como si un grito de lore te fuera a salvar del fuego. Qué patético.");
+                setTimeout(() => {
+                  appendVoxMessage("traitor", "Tu cadáver dorado ni siquiera va a dar batalla. Ya sé dónde estás... nos vemos en un instante.");
+                  cutVoxSignal();
+                }, 1150);
+              }, 850);
+            }
+          },
+          {
+            label: "¿Quién habla? ¡No te temo!",
+            onSelect: () => {
+              appendVoxMessage("user", "¿Quién habla? ¡No te temo!");
+              setTimeout(() => {
+                appendVoxMessage("traitor", "¿En serio...? Vaya geek. Hablándole valiente a una pantalla mientras yo ya tengo tus coordenadas marcadas. Disfruta tus últimos segundos mirando el monitor.");
+                cutVoxSignal();
+              }, 850);
+            }
+          },
+          {
+            label: "Cortar transmisión ahora",
+            onSelect: () => {
+              appendVoxMessage("user", "Cortar transmisión ahora");
+              setTimeout(() => {
+                appendVoxMessage("traitor", "¿Colgarme? Qué tierno... ya estás fichado y voy de camino.");
+                cutVoxSignal();
+              }, 650);
+            }
+          }
+        ]);
+      }, 950);
+    }
+
+    runeTrigger.addEventListener("click", startHereticVoxSession);
+    voxCloseBtn.addEventListener("click", () => voxOverlay.classList.remove("open"));
+    voxOverlay.addEventListener("click", (e) => {
+      if (e.target === voxOverlay) voxOverlay.classList.remove("open");
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.altKey && e.key.toLowerCase() === "h") {
+        e.preventDefault();
+        startHereticVoxSession();
+        return;
+      }
+      if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+        secretWordBuffer = (secretWordBuffer + e.key.toUpperCase()).slice(-6);
+        if (secretWordBuffer === "HEREJE") {
+          secretWordBuffer = "";
+          startHereticVoxSession();
+        }
+      }
+    });
+
+    window.addEventListener("DOMContentLoaded", () => {
+      enableMusicNow();
+      resetAndStart();
+    });
+  </script>
+</body>
+</html>
